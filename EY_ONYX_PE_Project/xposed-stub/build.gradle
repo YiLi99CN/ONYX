@@ -1,0 +1,27 @@
+plugins {
+    id 'java-library'
+}
+
+java {
+    sourceCompatibility = JavaVersion.VERSION_11
+    targetCompatibility = JavaVersion.VERSION_11
+}
+
+def sdkDir = null
+def localPropsFile = rootProject.file('local.properties')
+if (localPropsFile.exists()) {
+    def props = new Properties()
+    localPropsFile.withInputStream { props.load(it) }
+    sdkDir = props.getProperty('sdk.dir')
+}
+if (!sdkDir) {
+    sdkDir = System.getenv('ANDROID_HOME') ?: System.getenv('ANDROID_SDK_ROOT')
+}
+if (sdkDir) {
+    def androidJar = file("${sdkDir}/platforms/android-34/android.jar")
+    if (androidJar.exists()) {
+        dependencies {
+            compileOnly files(androidJar)
+        }
+    }
+}
